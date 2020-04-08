@@ -7,10 +7,12 @@ import io.github.rybalkinsd.kohttp.dsl.*
 import io.github.rybalkinsd.kohttp.dsl.context.HttpContext
 import io.github.rybalkinsd.kohttp.ext.url
 import it.skrape.core.fetcher.Method.*
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import java.util.*
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -72,6 +74,8 @@ class HttpFetcher(private val request: Request) : Fetcher {
 
     private fun OkHttpClient.withSslConfiguration(): OkHttpClient = when {
         request.sslRelaxed -> OkHttpClient.Builder()
+                .connectionSpecs(listOf(ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                        .build()))
                 .sslSocketFactory(insecureSocketFactory(), naiveTrustManager())
                 .hostnameVerifier(HostnameVerifier { _, _ -> true })
                 .build()
